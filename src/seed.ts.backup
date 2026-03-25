@@ -1,0 +1,699 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+import { connectToDatabase } from './lib/db';
+import { env } from './lib/env';
+import { LevelModel } from './models/Level';
+import { ModuleModel } from './models/Module';
+import { LessonModel } from './models/Lesson';
+import { ActivityModel } from './models/Activity';
+
+async function seed() {
+  await connectToDatabase(env.MONGODB_URI);
+
+  const courseSlug = 'german-goethe';
+
+  // Create A0 Level
+  const levelA0 = await LevelModel.findOneAndUpdate(
+    { courseSlug, code: 'A0' },
+    { $set: { courseSlug, code: 'A0', order: 0, title: 'A0 Absolute Beginner', description: 'Complete basics: alphabet, greetings, numbers.' } },
+    { upsert: true, new: true }
+  );
+
+  // Create A1 Level
+  const levelA1 = await LevelModel.findOneAndUpdate(
+    { courseSlug, code: 'A1' },
+    { $set: { courseSlug, code: 'A1', order: 1, title: 'A1 Beginner', description: 'Basics: greetings, articles, simple sentences.' } },
+    { upsert: true, new: true }
+  );
+
+  // Create A2 Level
+  const levelA2 = await LevelModel.findOneAndUpdate(
+    { courseSlug, code: 'A2' },
+    { $set: { courseSlug, code: 'A2', order: 2, title: 'A2 Elementary', description: 'Everyday conversations, past tense, more complex grammar.' } },
+    { upsert: true, new: true }
+  );
+
+  // Create B1 Level
+  const levelB1 = await LevelModel.findOneAndUpdate(
+    { courseSlug, code: 'B1' },
+    { $set: { courseSlug, code: 'B1', order: 3, title: 'B1 Intermediate', description: 'Complex sentences, subjunctive, business German.' } },
+    { upsert: true, new: true }
+  );
+
+  // Create A0 Module for Alphabet and Basics
+  const a0Module = await ModuleModel.findOneAndUpdate(
+    { levelId: levelA1._id, order: 0 },
+    { $set: { levelId: levelA1._id, order: 0, title: 'German Alphabet & Pronunciation', description: 'Letters, sounds, and basic pronunciation', tags: ['alphabet', 'pronunciation', 'basics'] } },
+    { upsert: true, new: true }
+  );
+
+  // Alphabet Lesson
+  const a0Lesson1 = await LessonModel.findOneAndUpdate(
+    { moduleId: a0Module._id, order: 1 },
+    {
+      $set: {
+        moduleId: a0Module._id,
+        order: 1,
+        title: 'The German Alphabet A-Z',
+        objectives: ['Learn all German letters', 'Master basic pronunciation', 'Recognize special characters'],
+        contentBlocks: [
+          { type: 'text', text: 'The German alphabet has 26 letters like English, plus 4 special characters: Ä, Ö, Ü, and ß.' },
+          { type: 'example', de: 'A wie Anton', en: 'A like in Anton' },
+          { type: 'example', de: 'B wie Berta', en: 'B like in Berta' },
+          { type: 'example', de: 'C wie Cäsar', en: 'C like in Caesar' },
+          { type: 'example', de: 'D wie Dora', en: 'D like in Dora' },
+          { type: 'example', de: 'E wie Emil', en: 'E like in Emil' },
+          { type: 'example', de: 'F wie Friedrich', en: 'F like in Friedrich' },
+          { type: 'example', de: 'G wie Gustav', en: 'G like in Gustav' },
+          { type: 'example', de: 'H wie Heinrich', en: 'H like in Heinrich' },
+          { type: 'example', de: 'I wie Ida', en: 'I like in Ida' },
+          { type: 'example', de: 'J wie Julius', en: 'J like in Julius' },
+          { type: 'example', de: 'K wie Kaufmann', en: 'K like in Kaufmann' },
+          { type: 'example', de: 'L wie Ludwig', en: 'L like in Ludwig' },
+          { type: 'example', de: 'M wie Martha', en: 'M like in Martha' },
+          { type: 'example', de: 'N wie Nordpol', en: 'N like in Nordpol' },
+          { type: 'example', de: 'O wie Otto', en: 'O like in Otto' },
+          { type: 'example', de: 'P wie Paula', en: 'P like in Paula' },
+          { type: 'example', de: 'Q wie Quelle', en: 'Q like in Quelle' },
+          { type: 'example', de: 'R wie Richard', en: 'R like in Richard' },
+          { type: 'example', de: 'S wie Samuel', en: 'S like in Samuel' },
+          { type: 'example', de: 'T wie Theodor', en: 'T like in Theodor' },
+          { type: 'example', de: 'U like Ulrich', en: 'U like in Ulrich' },
+          { type: 'example', de: 'V wie Viktor', en: 'V like in Viktor' },
+          { type: 'example', de: 'W wie Wilhelm', en: 'W like in Wilhelm' },
+          { type: 'example', de: 'X wie Xanthippe', en: 'X like in Xanthippe' },
+          { type: 'example', de: 'Y wie Ypsilon', en: 'Y like in Ypsilon' },
+          { type: 'example', de: 'Z wie Zacharias', en: 'Z like in Zacharias' },
+          { type: 'tip', text: 'Practice each letter sound daily to build muscle memory!' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // Special Characters Lesson
+  const a0Lesson2 = await LessonModel.findOneAndUpdate(
+    { moduleId: a0Module._id, order: 2 },
+    {
+      $set: {
+        moduleId: a0Module._id,
+        order: 2,
+        title: 'Special Characters: Ä, Ö, Ü, ß',
+        objectives: ['Master umlauts', 'Pronounce Eszett (ß)', 'Use special characters correctly'],
+        contentBlocks: [
+          { type: 'text', text: 'German has four special characters that change pronunciation and meaning.' },
+          { type: 'example', de: 'Äpfel (apples)', en: 'Ä sounds like "eh" in bet' },
+          { type: 'example', de: 'Öl (oil)', en: 'Ö sounds like "er" in her with rounded lips' },
+          { type: 'example', de: 'über (over)', en: 'Ü sounds like "ue" with rounded lips' },
+          { type: 'example', de: 'Straße (street)', en: 'ß sounds like "s" in street' },
+          { type: 'tip', text: 'Remember: Ä=E+H, Ö=O+E, Ü=U+E, ß=double S' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // Basic Vocabulary Lesson
+  const a0Lesson3 = await LessonModel.findOneAndUpdate(
+    { moduleId: a0Module._id, order: 3 },
+    {
+      $set: {
+        moduleId: a0Module._id,
+        order: 3,
+        title: 'Essential German Words',
+        objectives: ['Learn basic greetings', 'Master common nouns', 'Practice pronunciation'],
+        contentBlocks: [
+          { type: 'text', text: 'Start with these essential German words for everyday conversation.' },
+          { type: 'example', de: 'Hallo - Hello', en: 'Basic greeting' },
+          { type: 'example', de: 'Danke - Thank you', en: 'Express gratitude' },
+          { type: 'example', de: 'Bitte - Please/You\'re welcome', en: 'Politeness marker' },
+          { type: 'example', de: 'Ja - Yes', en: 'Affirmative' },
+          { type: 'example', de: 'Nein - No', en: 'Negative' },
+          { type: 'example', de: 'Entschuldigung - Excuse me', en: 'Getting attention' },
+          { type: 'example', de: 'Wasser - Water', en: 'Essential noun' },
+          { type: 'example', de: 'Brot - Bread', en: 'Food item' },
+          { type: 'example', de: 'Haus - House', en: 'Building' },
+          { type: 'example', de: 'Auto - Car', en: 'Vehicle' },
+          { type: 'tip', text: 'Practice these words with proper German pronunciation!' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+  const a1Module1 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelA1._id, order: 1 },
+    { $set: { levelId: levelA1._id, order: 1, title: 'Articles & Nouns', description: 'der/die/das basics', tags: ['articles'] } },
+    { upsert: true, new: true }
+  );
+
+  const a1Module2 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelA1._id, order: 2 },
+    { $set: { levelId: levelA1._id, order: 2, title: 'Basic Verbs', description: 'Present tense conjugation', tags: ['verbs', 'present'] } },
+    { upsert: true, new: true }
+  );
+
+  const a1Module3 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelA1._id, order: 3 },
+    { $set: { levelId: levelA1._id, order: 3, title: 'Greetings & Introductions', description: 'Hello, how are you?', tags: ['greetings', 'social'] } },
+    { upsert: true, new: true }
+  );
+
+  // Create A2 Expanded Grammar Module
+  const a2Module3 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelA2._id, order: 3 },
+    { $set: { levelId: levelA2._id, order: 3, title: 'German Cases Deep Dive', description: 'Master nominative, accusative, dative, genitive', tags: ['cases', 'grammar', 'advanced'] } },
+    { upsert: true, new: true }
+  );
+
+  const a2Module4 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelA2._id, order: 4 },
+    { $set: { levelId: levelA2._id, order: 4, title: 'Prepositions Made Easy', description: 'Learn prepositions and their cases', tags: ['prepositions', 'cases', 'grammar'] } },
+    { upsert: true, new: true }
+  );
+
+  // German Cases Lesson
+  const a2Lesson3 = await LessonModel.findOneAndUpdate(
+    { moduleId: a2Module3._id, order: 1 },
+    {
+      $set: {
+        moduleId: a2Module3._id,
+        order: 1,
+        title: 'The Four German Cases',
+        objectives: ['Understand case system', 'Know when to use each case', 'Recognize case patterns'],
+        contentBlocks: [
+          { type: 'text', text: 'German has four cases that show a noun\'s role in the sentence.' },
+          { type: 'example', de: 'Nominativ: Der Hund bellt', en: 'Nominative: The dog barks (subject)' },
+          { type: 'example', de: 'Akkusativ: Ich sehe den Hund', en: 'Accusative: I see the dog (direct object)' },
+          { type: 'example', de: 'Dativ: Ich gebe dem Hund Futter', en: 'Dative: I give food to the dog (indirect object)' },
+          { type: 'example', de: 'Genitiv: Das Futter des Hundes', en: 'Genitive: The food of the dog (possession)' },
+          { type: 'tip', text: 'Remember: Subject = Nominative, Direct Object = Accusative, Indirect Object = Dative, Possession = Genitive' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // Prepositions Lesson
+  const a2Lesson4 = await LessonModel.findOneAndUpdate(
+    { moduleId: a2Module4._id, order: 1 },
+    {
+      $set: {
+        moduleId: a2Module4._id,
+        order: 1,
+        title: 'Prepositions and Their Cases',
+        objectives: ['Learn accusative prepositions', 'Master dative prepositions', 'Understand two-way prepositions'],
+        contentBlocks: [
+          { type: 'text', text: 'Prepositions in German determine which case follows them.' },
+          { type: 'example', de: 'Accusative: durch, für, gegen, ohne, um', en: 'Always accusative prepositions' },
+          { type: 'example', de: 'Dativ: aus, bei, mit, nach, seit, von, zu', en: 'Always dative prepositions' },
+          { type: 'example', de: 'Two-way: in, an, auf, über, unter, vor, hinter, neben', en: 'Either accusative or dative' },
+          { type: 'tip', text: 'Two-way prepositions: accusative for movement, dative for location' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+  const a2Module1 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelA2._id, order: 1 },
+    { $set: { levelId: levelA2._id, order: 1, title: 'Past Tense', description: 'Perfekt tense for everyday stories', tags: ['past', 'perfekt'] } },
+    { upsert: true, new: true }
+  );
+
+  const a2Module2 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelA2._id, order: 2 },
+    { $set: { levelId: levelA2._id, order: 2, title: 'Cases Overview', description: 'Nominative, accusative, dative', tags: ['cases'] } },
+    { upsert: true, new: true }
+  );
+
+  // A1 Lessons
+  const a1Lesson1 = await LessonModel.findOneAndUpdate(
+    { moduleId: a1Module1._id, order: 1 },
+    {
+      $set: {
+        moduleId: a1Module1._id,
+        order: 1,
+        title: 'Definite Articles (der/die/das)',
+        objectives: ['Recognize common noun articles', 'Practice selecting der/die/das'],
+        contentBlocks: [
+          { type: 'text', text: 'In German, nouns have grammatical gender: masculine (der), feminine (die), neuter (das).' },
+          { type: 'example', de: 'der Apfel', en: 'the apple' },
+          { type: 'example', de: 'die Banane', en: 'the banana' },
+          { type: 'example', de: 'das Brot', en: 'the bread' },
+          { type: 'tip', text: 'There are patterns, but many articles must be learned with the noun.' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  const a1Lesson2 = await LessonModel.findOneAndUpdate(
+    { moduleId: a1Module2._id, order: 1 },
+    {
+      $set: {
+        moduleId: a1Module2._id,
+        order: 1,
+        title: 'Present Tense: Regular Verbs',
+        objectives: ['Conjugate regular verbs', 'Form simple sentences'],
+        contentBlocks: [
+          { type: 'text', text: 'Regular verbs follow predictable patterns in the present tense.' },
+          { type: 'example', de: 'ich lerne', en: 'I learn' },
+          { type: 'example', de: 'du lernst', en: 'you learn' },
+          { type: 'example', de: 'er/sie/es lernt', en: 'he/she/it learns' },
+          { type: 'tip', text: 'The stem vowel usually stays the same for regular verbs.' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  const a1Lesson3 = await LessonModel.findOneAndUpdate(
+    { moduleId: a1Module3._id, order: 1 },
+    {
+      $set: {
+        moduleId: a1Module3._id,
+        order: 1,
+        title: 'Basic Greetings',
+        objectives: ['Say hello and goodbye', 'Introduce yourself'],
+        contentBlocks: [
+          { type: 'text', text: 'German greetings vary by formality and time of day.' },
+          { type: 'example', de: 'Hallo!', en: 'Hello!' },
+          { type: 'example', de: 'Guten Morgen', en: 'Good morning' },
+          { type: 'example', de: 'Guten Tag', en: 'Good day/Hello' },
+          { type: 'example', de: 'Auf Wiedersehen', en: 'Goodbye (formal)' },
+          { type: 'tip', text: 'Use "Hallo" with friends, "Guten Tag" in formal situations.' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // A2 Lessons
+  const a2Lesson1 = await LessonModel.findOneAndUpdate(
+    { moduleId: a2Module1._id, order: 1 },
+    {
+      $set: {
+        moduleId: a2Module1._id,
+        order: 1,
+        title: 'Perfekt Tense with Haben',
+        objectives: ['Use haben for Perfekt', 'Talk about past activities'],
+        contentBlocks: [
+          { type: 'text', text: 'The Perfekt tense is used for spoken past. Use "haben" with most verbs.' },
+          { type: 'example', de: 'ich habe gegessen', en: 'I have eaten / I ate' },
+          { type: 'example', de: 'du hast gearbeitet', en: 'you have worked / you worked' },
+          { type: 'tip', text: 'Past participle goes at the end: ge- + stem + -t/-en' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  const a2Lesson2 = await LessonModel.findOneAndUpdate(
+    { moduleId: a2Module2._id, order: 1 },
+    {
+      $set: {
+        moduleId: a2Module2._id,
+        order: 1,
+        title: 'Accusative Case',
+        objectives: ['Identify direct objects', 'Use accusative articles'],
+        contentBlocks: [
+          { type: 'text', text: 'The accusative case marks direct objects (what receives the action).' },
+          { type: 'example', de: 'Ich sehe den Mann', en: 'I see the man' },
+          { type: 'example', de: 'Er kauft die Tasche', en: 'He buys the bag' },
+          { type: 'tip', text: 'Masculine articles change: der → den, ein → einen' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // Activities for A0 (Alphabet & Basics)
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a0Lesson1._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a0Lesson1._id,
+        order: 1,
+        type: 'alphabet_recognition',
+        prompt: 'Match the German letters with their pronunciation examples.',
+        payload: {
+          items: [
+            { letter: 'A', example: 'Anton', options: ['Anton', 'Berta', 'Cäsar', 'Dora'] },
+            { letter: 'H', example: 'Heinrich', options: ['Friedrich', 'Gustav', 'Heinrich', 'Ida'] },
+            { letter: 'R', example: 'Richard', options: ['Paula', 'Quelle', 'Richard', 'Samuel'] },
+            { letter: 'W', example: 'Wilhelm', options: ['Viktor', 'Wilhelm', 'Xanthippe', 'Ypsilon'] },
+          ],
+        },
+        scoring: { xpCorrect: 10, xpIncorrect: 2 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a0Lesson2._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a0Lesson2._id,
+        order: 1,
+        type: 'special_characters',
+        prompt: 'Choose the correct pronunciation for German special characters.',
+        payload: {
+          items: [
+            { character: 'Ä', word: 'Äpfel', pronunciation: 'eh', options: ['ah', 'eh', 'oh', 'uh'] },
+            { character: 'Ö', word: 'Öl', pronunciation: 'er', options: ['eh', 'er', 'oh', 'uh'] },
+            { character: 'Ü', word: 'über', pronunciation: 'ue', options: ['ah', 'eh', 'oh', 'ue'] },
+            { character: 'ß', word: 'Straße', pronunciation: 's', options: ['sh', 's', 'z', 'ts'] },
+          ],
+        },
+        scoring: { xpCorrect: 15, xpIncorrect: 3 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a0Lesson3._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a0Lesson3._id,
+        order: 1,
+        type: 'vocabulary_matching',
+        prompt: 'Match German words with their English meanings.',
+        payload: {
+          items: [
+            { german: 'Hallo', english: 'Hello', options: ['Hello', 'Goodbye', 'Thank you', 'Please'] },
+            { german: 'Danke', english: 'Thank you', options: ['Please', 'Thank you', 'Excuse me', 'Yes'] },
+            { german: 'Wasser', english: 'Water', options: ['Water', 'Bread', 'House', 'Car'] },
+            { german: 'Haus', english: 'House', options: ['Car', 'House', 'Street', 'Apple'] },
+            { german: 'Entschuldigung', english: 'Excuse me', options: ['Sorry', 'Hello', 'Excuse me', 'Goodbye'] },
+          ],
+        },
+        scoring: { xpCorrect: 10, xpIncorrect: 2 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // Activities for A1
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a1Lesson1._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a1Lesson1._id,
+        order: 1,
+        type: 'find_article',
+        prompt: 'Choose the correct article for each noun.',
+        payload: {
+          items: [
+            { noun: 'Apfel', correct: 'der', distractors: ['die', 'das'] },
+            { noun: 'Banane', correct: 'die', distractors: ['der', 'das'] },
+            { noun: 'Brot', correct: 'das', distractors: ['der', 'die'] },
+            { noun: 'Tisch', correct: 'der', distractors: ['die', 'das'] },
+            { noun: 'Tür', correct: 'die', distractors: ['der', 'das'] },
+          ],
+        },
+        scoring: { xpCorrect: 10, xpIncorrect: 2 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a1Lesson2._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a1Lesson2._id,
+        order: 1,
+        type: 'verb_conjugation',
+        prompt: 'Conjugate the verb "lernen" (to learn) for each pronoun.',
+        payload: {
+          verb: 'lernen',
+          pronouns: [
+            { pronoun: 'ich', answer: 'lerne' },
+            { pronoun: 'du', answer: 'lernst' },
+            { pronoun: 'er', answer: 'lernt' },
+            { pronoun: 'wir', answer: 'lernen' },
+          ],
+        },
+        scoring: { xpCorrect: 15, xpIncorrect: 3 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // Activities for A2 Grammar
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a2Lesson3._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a2Lesson3._id,
+        order: 1,
+        type: 'case_identification',
+        prompt: 'Identify the case of the underlined noun in each sentence.',
+        payload: {
+          items: [
+            { sentence: 'Der ___Hund___ bellt.', case: 'Nominative', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+            { sentence: 'Ich sehe den ___Hund___.', case: 'Accusative', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+            { sentence: 'Ich gebe dem ___Hund___ Futter.', case: 'Dative', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+            { sentence: 'Das Futter des ___Hundes___.', case: 'Genitive', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+          ],
+        },
+        scoring: { xpCorrect: 20, xpIncorrect: 4 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a2Lesson4._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a2Lesson4._id,
+        order: 1,
+        type: 'preposition_cases',
+        prompt: 'Choose the correct case for each preposition.',
+        payload: {
+          items: [
+            { preposition: 'durch', case: 'Accusative', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+            { preposition: 'mit', case: 'Dative', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+            { preposition: 'für', case: 'Accusative', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+            { preposition: 'von', case: 'Dative', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+            { preposition: 'ohne', case: 'Accusative', options: ['Nominative', 'Accusative', 'Dative', 'Genitive'] },
+          ],
+        },
+        scoring: { xpCorrect: 15, xpIncorrect: 3 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // B1 Modules (using levelB1 from line 39)
+  const b1Module1 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelB1._id, order: 1 },
+    { $set: { levelId: levelB1._id, order: 1, title: 'Subjunctive Mood', description: 'Konjunktiv II for wishes and conditional', tags: ['subjunctive', 'konjunktiv'] } },
+    { upsert: true, new: true }
+  );
+
+  const b1Module2 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelB1._id, order: 2 },
+    { $set: { levelId: levelB1._id, order: 2, title: 'Business German', description: 'Professional communication and vocabulary', tags: ['business', 'professional'] } },
+    { upsert: true, new: true }
+  );
+
+  const b1Module3 = await ModuleModel.findOneAndUpdate(
+    { levelId: levelB1._id, order: 3 },
+    { $set: { levelId: levelB1._id, order: 3, title: 'Complex Sentences', description: 'Nebensätze and connectors', tags: ['grammar', 'sentences'] } },
+    { upsert: true, new: true }
+  );
+
+  // B1 Lessons
+  const b1Lesson1 = await LessonModel.findOneAndUpdate(
+    { moduleId: b1Module1._id, order: 1 },
+    {
+      $set: {
+        moduleId: b1Module1._id,
+        order: 1,
+        title: 'Konjunktiv II: Wishes and Hypotheticals',
+        objectives: ['Form Konjunktiv II', 'Express wishes and hypothetical situations'],
+        contentBlocks: [
+          { type: 'text', text: 'Konjunktiv II is used for unreal situations, wishes, and polite requests.' },
+          { type: 'example', de: 'Ich hätte gern einen Kaffee', en: 'I would like a coffee' },
+          { type: 'example', de: 'Wenn ich Geld hätte, würde ich reisen', en: 'If I had money, I would travel' },
+          { type: 'tip', text: 'For regular verbs: hätte/wäre + past participle' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  const b1Lesson2 = await LessonModel.findOneAndUpdate(
+    { moduleId: b1Module2._id, order: 1 },
+    {
+      $set: {
+        moduleId: b1Module2._id,
+        order: 1,
+        title: 'Business Email Writing',
+        objectives: ['Write professional emails', 'Use appropriate formal language'],
+        contentBlocks: [
+          { type: 'text', text: 'German business communication requires formal address and structure.' },
+          { type: 'example', de: 'Sehr geehrte Damen und Herren', en: 'Dear Sir or Madam' },
+          { type: 'example', de: 'Mit freundlichen Grüßen', en: 'With kind regards' },
+          { type: 'tip', text: 'Always use formal "Sie" unless you know the person well' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  const b1Lesson3 = await LessonModel.findOneAndUpdate(
+    { moduleId: b1Module3._id, order: 1 },
+    {
+      $set: {
+        moduleId: b1Module3._id,
+        order: 1,
+        title: 'Relative Clauses',
+        objectives: ['Use der/die/das/dem', 'Build complex sentences'],
+        contentBlocks: [
+          { type: 'text', text: 'Relative clauses add information about nouns using der/die/das/dem.' },
+          { type: 'example', de: 'Der Mann, der dort steht, ist mein Lehrer', en: 'The man who is standing there is my teacher' },
+          { type: 'example', de: 'Das Buch, das ich lese, ist interessant', en: 'The book that I am reading is interesting' },
+          { type: 'tip', text: 'The relative pronoun agrees with the noun it describes' },
+        ],
+      },
+    },
+    { upsert: true, new: true }
+  );
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a2Lesson1._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a2Lesson1._id,
+        order: 1,
+        type: 'perfekt_formation',
+        prompt: 'Form the Perfekt tense with "haben".',
+        payload: {
+          items: [
+            { infinitive: 'machen', answer: 'habe gemacht' },
+            { infinitive: 'kaufen', answer: 'habe gekauft' },
+            { infinitive: 'spielen', answer: 'habe gespielt' },
+            { infinitive: 'arbeiten', answer: 'habe gearbeitet' },
+          ],
+        },
+        scoring: { xpCorrect: 20, xpIncorrect: 4 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: a2Lesson2._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: a2Lesson2._id,
+        order: 1,
+        type: 'case_selection',
+        prompt: 'Choose the correct accusative article.',
+        payload: {
+          items: [
+            { noun: 'Hund', article: 'der', answer: 'den' },
+            { noun: 'Ball', article: 'der', answer: 'den' },
+            { noun: 'Katze', article: 'die', answer: 'die' },
+            { noun: 'Buch', article: 'das', answer: 'das' },
+          ],
+        },
+        scoring: { xpCorrect: 15, xpIncorrect: 3 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // Activities for B1
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: b1Lesson1._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: b1Lesson1._id,
+        order: 1,
+        type: 'subjunctive_formation',
+        prompt: 'Form the Konjunktiv II for these situations.',
+        payload: {
+          items: [
+            { situation: 'I would like', answer: 'Ich hätte gern' },
+            { situation: 'If I had time', answer: 'Wenn ich Zeit hätte' },
+            { situation: 'I would be happy', answer: 'Ich wäre glücklich' },
+            { situation: 'You could help', answer: 'Du könntest helfen' },
+          ],
+        },
+        scoring: { xpCorrect: 25, xpIncorrect: 5 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: b1Lesson2._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: b1Lesson2._id,
+        order: 1,
+        type: 'business_phrases',
+        prompt: 'Match the German business phrases with their English meanings.',
+        payload: {
+          items: [
+            { german: 'Anlagen', english: 'Attachments', options: ['Attachments', 'Meeting', 'Deadline', 'Report'] },
+            { german: 'Termin', english: 'Appointment', options: ['Appointment', 'Budget', 'Contract', 'Invoice'] },
+            { german: 'Rechnung', english: 'Invoice', options: ['Invoice', 'Proposal', 'Schedule', 'Agenda'] },
+            { german: 'Besprechung', english: 'Meeting', options: ['Meeting', 'Holiday', 'Project', 'Budget'] },
+          ],
+        },
+        scoring: { xpCorrect: 20, xpIncorrect: 4 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await ActivityModel.findOneAndUpdate(
+    { parentType: 'lesson', parentId: b1Lesson3._id, order: 1 },
+    {
+      $set: {
+        parentType: 'lesson',
+        parentId: b1Lesson3._id,
+        order: 1,
+        type: 'relative_pronouns',
+        prompt: 'Choose the correct relative pronoun for each sentence.',
+        payload: {
+          items: [
+            { sentence: 'Der Mann, ___ dort steht, ist mein Lehrer', answer: 'der', options: ['der', 'die', 'das', 'dem'] },
+            { sentence: 'Das Buch, ___ ich lese, ist interessant', answer: 'das', options: ['der', 'die', 'das', 'dem'] },
+            { sentence: 'Die Frau, ___ ich kenne, kommt aus Berlin', answer: 'die', options: ['der', 'die', 'das', 'dem'] },
+            { sentence: 'Das Kind, ___ spielt, ist glücklich', answer: 'das', options: ['der', 'die', 'das', 'dem'] },
+          ],
+        },
+        scoring: { xpCorrect: 20, xpIncorrect: 4 },
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  // eslint-disable-next-line no-console
+  console.log('Seed completed');
+}
+
+seed().catch((err) => {
+  // eslint-disable-next-line no-console
+  console.error(err);
+  process.exit(1);
+});
