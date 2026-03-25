@@ -7,6 +7,7 @@
     "dev": "nodemon src/index.ts",
     "dev:ts-node": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc -p tsconfig.json",
+    "build:vercel": "tsc",
     "start": "node dist/index.js",
     "seed": "ts-node src/seed.ts",
     "seed:comprehensive": "ts-node src/seed-comprehensive-clean.ts",
@@ -28,6 +29,7 @@
   },
   "homepage": "https://github.com/armanadd01/language-learning-app-de-backend#readme",
   "dependencies": {
+    "@vercel/node": "^3.2.14",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
