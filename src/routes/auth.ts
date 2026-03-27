@@ -124,6 +124,10 @@ authRouter.post('/login', async (req, res, next) => {
     const user = await UserModel.findOne({ email: body.email });
     if (!user) throw new HttpError(401, 'Invalid credentials');
 
+    if (!user.passwordHash) {
+      throw new HttpError(400, 'This account uses Firebase login');
+    }
+
     const ok = await bcrypt.compare(body.password, user.passwordHash);
     if (!ok) throw new HttpError(401, 'Invalid credentials');
 

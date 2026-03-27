@@ -17,6 +17,4 @@ const wordSchema = new Schema<WordDoc>(
   { timestamps: true }
 );
 
-wordSchema.index({ normalized: 1 }, { unique: true });
-
 export const WordModel = mongoose.model<WordDoc>('Word', wordSchema);

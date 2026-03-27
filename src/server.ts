@@ -17,7 +17,14 @@ export function createServer() {
     cors({
       origin: (origin, cb) => {
         if (!origin) return cb(null, true);
-        const allowed = env.CORS_ORIGIN.split(',').map((s) => s.trim());
+
+        // In development, allow all origins to avoid CORS issues when using a LAN IP.
+        if (process.env.NODE_ENV !== 'production') return cb(null, true);
+
+        const raw = env.CORS_ORIGIN.trim();
+        if (raw === '*') return cb(null, true);
+
+        const allowed = raw.split(',').map((s) => s.trim());
         if (allowed.includes(origin)) return cb(null, true);
         return cb(new Error(`CORS blocked for origin: ${origin}`));
       },

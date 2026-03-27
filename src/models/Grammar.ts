@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
 export type GrammarDoc = {
   slug: string;
@@ -14,9 +14,10 @@ const grammarSchema = new Schema<GrammarDoc>(
     language: { type: String, required: true },
     content: { type: Schema.Types.Mixed, required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-grammarSchema.index({ slug: 1 }, { unique: true });
-
-export const GrammarModel = mongoose.model<GrammarDoc>('Grammar', grammarSchema);
+export const GrammarModel = mongoose.model<GrammarDoc>(
+  "Grammar",
+  grammarSchema,
+);

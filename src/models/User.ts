@@ -3,8 +3,9 @@ import mongoose, { Schema } from 'mongoose';
 export type UserRole = 'user' | 'admin';
 
 export type UserDoc = {
+  firebaseUid?: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
   roles: UserRole[];
   profile?: {
     displayName?: string;
@@ -25,8 +26,9 @@ export type UserDoc = {
 
 const userSchema = new Schema<UserDoc>(
   {
+    firebaseUid: { type: String, unique: true, sparse: true, index: true },
     email: { type: String, required: true, unique: true, index: true },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: false, default: '' },
     roles: { type: [String], required: true, default: ['user'] },
     profile: {
       displayName: { type: String },
