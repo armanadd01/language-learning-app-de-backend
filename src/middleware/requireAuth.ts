@@ -45,7 +45,15 @@ export async function requireAuth(req: AuthedRequest, _res: Response, next: Next
 
     await attachUserFromBearerToken(req);
     return next();
-  } catch {
+  } catch (err) {
+    if (err instanceof Error) {
+      if (
+        err.message.includes('Missing FIREBASE_SERVICE_ACCOUNT_JSON') ||
+        err.message.includes('Invalid FIREBASE_SERVICE_ACCOUNT_JSON')
+      ) {
+        return next(err);
+      }
+    }
     return next(new HttpError(401, 'Invalid token'));
   }
 }
