@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/requireAuth';
+import { optionalAuth, requireAuth } from '../middleware/requireAuth';
 import { ProgressionService } from '../lib/progressionService';
 import { LevelModel } from '../models/Level';
 import { ModuleModel } from '../models/Module';
@@ -14,7 +14,7 @@ import { HttpError } from '../lib/httpErrors';
 export const contentRouter = Router();
 
 // More specific routes first to avoid conflicts
-contentRouter.get('/grammar', requireAuth, async (req, res, next) => {
+contentRouter.get('/grammar', optionalAuth, async (req, res, next) => {
   try {
     const slug = z.string().default('german').parse(req.query.slug);
     const doc = await GrammarModel.findOne({ slug });
@@ -119,16 +119,21 @@ contentRouter.get('/activities/:activityId', requireAuth, async (req, res, next)
   }
 });
 
-contentRouter.get('/levels', requireAuth, async (req, res, next) => {
+contentRouter.get('/levels', optionalAuth, async (req, res, next) => {
   try {
     const courseSlug = z.string().default('german-goethe').parse(req.query.courseSlug);
-    const userId = (req as any).user.id;
+    const userId = (req as any).user?.id as string | undefined;
     
     const levels = await LevelModel.find({ courseSlug }).sort({ order: 1 });
     
     // If no levels exist, return empty array instead of trying to initialize progress
     if (levels.length === 0) {
       return res.json({ levels: [] });
+    }
+
+    // Public response (no auth): return levels without per-user status
+    if (!userId) {
+      return res.json({ levels });
     }
     
     const progress = await ProgressionService.getUserProgress(userId, courseSlug);
