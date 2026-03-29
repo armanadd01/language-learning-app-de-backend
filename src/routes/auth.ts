@@ -7,8 +7,20 @@ import { HttpError } from '../lib/httpErrors';
 import { signAccessToken } from '../lib/auth';
 import { env } from '../lib/env';
 import { requireAuth, AuthedRequest } from '../middleware/requireAuth';
+import { getFirebaseServiceAccountProjectId, hasFirebaseServiceAccountConfigured } from '../lib/firebaseAdmin';
 
 export const authRouter = Router();
+
+authRouter.get('/debug', (req, res) => {
+  const authHeader = req.headers.authorization;
+  res.json({
+    hasAuthorizationHeader: Boolean(authHeader),
+    authorizationHeaderStartsWithBearer: Boolean(authHeader?.startsWith('Bearer ')),
+    hasFirebaseServiceAccountConfigured: hasFirebaseServiceAccountConfigured(),
+    firebaseServiceAccountProjectId: getFirebaseServiceAccountProjectId(),
+    nodeEnv: process.env.NODE_ENV ?? null,
+  });
+});
 
 authRouter.post('/signup', async (req, res, next) => {
   try {

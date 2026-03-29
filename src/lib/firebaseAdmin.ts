@@ -16,6 +16,19 @@ function parseServiceAccount(raw: string) {
   return JSON.parse(asJson);
 }
 
+export function hasFirebaseServiceAccountConfigured() {
+  return Boolean(env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim());
+}
+
+export function getFirebaseServiceAccountProjectId(): string | null {
+  try {
+    const serviceAccount = parseServiceAccount(env.FIREBASE_SERVICE_ACCOUNT_JSON);
+    return typeof serviceAccount?.project_id === 'string' ? serviceAccount.project_id : null;
+  } catch {
+    return null;
+  }
+}
+
 export function getFirebaseAdminApp() {
   if (app) return app;
 
