@@ -1,8 +1,9 @@
 import mongoose, { Schema, Types } from 'mongoose';
 
-export type LevelCode = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+export type LevelCode = 'A0' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 export type LevelDoc = {
+  externalId?: string;
   courseSlug: string;
   code: LevelCode;
   order: number;
@@ -14,6 +15,7 @@ export type LevelDoc = {
 
 const levelSchema = new Schema<LevelDoc>(
   {
+    externalId: { type: String, index: true },
     courseSlug: { type: String, required: true, index: true },
     code: { type: String, required: true, index: true },
     order: { type: Number, required: true },

@@ -1,6 +1,7 @@
 import mongoose, { Schema, Types } from 'mongoose';
 
 export type ModuleDoc = {
+  externalId?: string;
   levelId: Types.ObjectId;
   order: number;
   title: string;
@@ -12,6 +13,7 @@ export type ModuleDoc = {
 
 const moduleSchema = new Schema<ModuleDoc>(
   {
+    externalId: { type: String, index: true },
     levelId: { type: Schema.Types.ObjectId, ref: 'Level', required: true, index: true },
     order: { type: Number, required: true },
     title: { type: String, required: true },
